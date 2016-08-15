@@ -1274,7 +1274,9 @@ SYSTEMIMAGE_SOURCE_DIR := $(TARGET_OUT)
 $(INSTALLED_SYSTEMIMAGE): $(BUILT_SYSTEMIMAGE) $(RECOVERY_FROM_BOOT_PATCH) | $(ACP)
 	@echo -e ${CL_CYN}"Install system fs image: $@"${CL_RST}
 	$(copy-file-to-target)
+ifneq (0,$(BOARD_SYSTEMIMAGE_PARTITION_SIZE))
 	$(hide) $(call assert-max-image-size,$@ $(RECOVERY_FROM_BOOT_PATCH),$(BOARD_SYSTEMIMAGE_PARTITION_SIZE))
+endif
 
 ifneq ($(MKSQUASHFS),)
 $(PRODUCT_OUT)/system.sfs: $(BUILT_SYSTEMIMAGE)
@@ -1511,9 +1513,7 @@ define build-vendorimage-target
   $(hide) PATH=$(foreach p,$(INTERNAL_USERIMAGES_BINARY_PATHS),$(p):)$$PATH \
       ./build/tools/releasetools/build_image.py \
       $(TARGET_OUT_VENDOR) $(vendorimage_intermediates)/vendor_image_info.txt $(INSTALLED_VENDORIMAGE_TARGET) $(TARGET_OUT)
-ifneq (0,$(BOARD_SYSTEMIMAGE_PARTITION_SIZE))
   $(hide) $(call assert-max-image-size,$(INSTALLED_VENDORIMAGE_TARGET),$(BOARD_VENDORIMAGE_PARTITION_SIZE))
-endif
 endef
 
 # We just build this directly to the install location.
