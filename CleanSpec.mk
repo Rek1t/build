@@ -378,6 +378,8 @@ $(call add-clean-step, rm -rf $(PRODUCT_OUT)/recovery/root/sdcard)
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/app/*)
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/priv-app/*)
 
+$(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/lib*/hw/power.default.so)
+
 $(call add-clean-step, rm -rf $(TARGET_OUT_COMMON_INTERMEDIATES)/APPS/previous_overlays.txt)
 $(call add-clean-step, rm -rf $(TARGET_OUT_COMMON_INTERMEDIATES)/APPS/current_packages.txt)
 
