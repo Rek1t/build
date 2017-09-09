@@ -246,7 +246,7 @@ system_prop_file := $(TARGET_SYSTEM_PROP)
 else
 system_prop_file := $(wildcard $(TARGET_DEVICE_DIR)/system.prop)
 endif
-$(intermediate_system_build_prop): $(VENDOR_BUILDINFO_SH) $(BUILDINFO_SH) $(INTERNAL_BUILD_ID_MAKEFILE) $(BUILD_SYSTEM)/version_defaults.mk $(system_prop_file) $(INSTALLED_ANDROID_INFO_TXT_TARGET)
+$(intermediate_system_build_prop): $(VENDOR_BUILDINFO_SH) $(BUILDINFO_SH) $(INTERNAL_BUILD_ID_MAKEFILE) $(BUILD_SYSTEM)/version_defaults.mk $(system_prop_file) $(TARGET_DEVICE_DIR)/BoardConfig.mk $(INSTALLED_ANDROID_INFO_TXT_TARGET)
 	@echo Target buildinfo: $@
 	@mkdir -p $(dir $@)
 	$(hide) echo > $@
@@ -1414,7 +1414,14 @@ endif
 $(INSTALLED_SYSTEMIMAGE): $(BUILT_SYSTEMIMAGE) $(RECOVERY_FROM_BOOT_PATCH)
 	@echo "Install system fs image: $@"
 	$(copy-file-to-target)
+ifneq (0,$(BOARD_SYSTEMIMAGE_PARTITION_SIZE))
 	$(hide) $(call assert-max-image-size,$@ $(RECOVERY_FROM_BOOT_PATCH),$(BOARD_SYSTEMIMAGE_PARTITION_SIZE))
+endif
+
+ifneq ($(MKSQUASHFS),)
+$(PRODUCT_OUT)/system.sfs: $(BUILT_SYSTEMIMAGE)
+	$(call build-squashfs-target,$^,$@)
+endif
 
 systemimage: $(INSTALLED_SYSTEMIMAGE)
 
@@ -1423,7 +1430,9 @@ systemimage-nodeps snod: $(filter-out systemimage-nodeps snod,$(MAKECMDGOALS)) \
 	            | $(INTERNAL_USERIMAGES_DEPS)
 	@echo "make $@: ignoring dependencies"
 	$(call build-systemimage-target,$(INSTALLED_SYSTEMIMAGE))
+ifneq (0,$(BOARD_SYSTEMIMAGE_PARTITION_SIZE))
 	$(hide) $(call assert-max-image-size,$(INSTALLED_SYSTEMIMAGE),$(BOARD_SYSTEMIMAGE_PARTITION_SIZE))
+endif
 
 ifneq (,$(filter systemimage-nodeps snod, $(MAKECMDGOALS)))
 ifeq (true,$(WITH_DEXPREOPT))

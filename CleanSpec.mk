@@ -417,6 +417,8 @@ $(call add-clean-step, rm -rf $(PRODUCT_OUT)/data/vendor/lib*)
 # Soong module variant change, remove obsolete intermediates
 $(call add-clean-step, rm -rf $(OUT_DIR)/soong/.intermediates)
 
+$(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/lib*/hw/power.default.so)
+
 # ************************************************
 # NEWER CLEAN STEPS MUST BE AT THE END OF THE LIST
 # ************************************************
